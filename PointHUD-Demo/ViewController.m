@@ -7,8 +7,13 @@
 //
 
 #import "ViewController.h"
+#import "LoadingHUD.h"
 
 @interface ViewController ()
+
+@property (nonatomic,strong)LoadingHUD *hud;
+@property (nonatomic,strong)NSTimer    *timer;
+@property (nonatomic,strong)UIButton   *button;
 
 @end
 
@@ -16,13 +21,37 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
+    _button = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_button setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width/2-50, [UIScreen mainScreen].bounds.size.height/2-20, 100, 40)];
+    [_button setTitle:@"Preview" forState:UIControlStateNormal];
+    [_button setBackgroundColor:[UIColor lightGrayColor]];
+    [self.view addSubview:_button];
+    [_button addTarget:self action:@selector(action:) forControlEvents:UIControlEventTouchUpInside];
+    
 }
 
+- (void)action:(id)action{
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    if ([action isKindOfClass:[UIButton class]]) {
+        
+        _button.hidden = YES;
+        _hud = [[LoadingHUD alloc]init];
+        [_hud showLoading];
+        [_hud showText:@"I am showing"];
+        
+        _timer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(action:) userInfo:nil repeats:NO];
+    }else{
+    
+        [_hud removeLoading];
+        _button.hidden = NO;
+        if (_timer) {
+            if ([_timer isValid]) {
+                [_timer invalidate];
+                _timer = nil;
+            }
+        }
+    }
 }
 
 
